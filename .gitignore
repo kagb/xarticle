@@ -1,0 +1,7 @@
+*.pyc
+*.log
+*.pid
+*.tmp
+*.swp
+*.property
+*.css.map
