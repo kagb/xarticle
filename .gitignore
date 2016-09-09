@@ -5,3 +5,4 @@
 *.swp
 *.property
 *.css.map
+/dist/*
