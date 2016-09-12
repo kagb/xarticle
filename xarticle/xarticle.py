@@ -38,11 +38,11 @@ class XArticle(object):
 
     def fetch(self, url):
         self.url = url
-        self.fetcher.fetch(self.url)
+        self.fetcher.fetch(self.url, check_xpath=self.site_conf.get('check_xpath'), '')
         self.html = self.fetcher.html
         self.doc = self.fetcher.doc
 
-    def do_extract(self, site_conf={}):
+    def do_extract(self):
         if self.doc is None:
             return
         parsed_url = urlparse(self.url)
@@ -52,7 +52,7 @@ class XArticle(object):
             default_conf = SITE_MAP['default']
 
         for field in self.FIELDS:
-            _xpath = site_conf.get(field, default_conf.get(field, None))
+            _xpath = self.site_conf.get(field, default_conf.get(field, None))
             if _xpath:
                 result = self.doc.xpath(_xpath)
                 setattr(self, field, result)
@@ -73,7 +73,7 @@ class XFetcher(object):
         self.html = ''
         self.doc = None
 
-    def fetch(self, url, check_xpath=None):
+    def fetch(self, url, check_xpath=''):
         self.url = url
         if not self.browser:
             self.browser = webdriver.PhantomJS()
