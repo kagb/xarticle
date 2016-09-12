@@ -38,7 +38,7 @@ class XArticle(object):
 
     def fetch(self, url):
         self.url = url
-        self.fetcher.fetch(self.url, check_xpath=self.site_conf.get('check_xpath'), '')
+        self.fetcher.fetch(self.url, check_xpath=self.site_conf.get('check_xpath', ''))
         self.html = self.fetcher.html
         self.doc = self.fetcher.doc
 
