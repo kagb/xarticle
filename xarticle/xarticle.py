@@ -1,73 +1,99 @@
 # -*-coding: utf-8 -*-
 
-import chardet
-import requests
 from urlparse import urlparse
+
 from lxml.html import document_fromstring
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from sitemap import SITE_MAP
+
+TIME_OUT = 3
 
 
 class XArticle(object):
 
+    FIELDS = ['title', 'summary', 'pics', 'videos']
+
     def __init__(self):
+        self.fetcher = None
+        self.site_conf = {}
         self.url = ''
-        self.doc = None
-        self.html = ''
-        self.title = ''
-        self.pic = ''
+        self.title = []
+        self.summary = []
         self.pics = []
         self.videos = []
+        if self.fetcher:
+            self.fetcher.clear()
+        else:
+            self.fetcher = XFetcher()
 
-    def extract(self, url, headers={}):
+    def extract(self, url):
         self.__init__()
+        self.fetch(url)
+        self.do_extract()
+
+    def fetch(self, url):
         self.url = url
-        parsed_url = urlparse(self.url)
-        hostname = parsed_url.hostname
-        site_conf = SITE_MAP.get(hostname, {})
+        self.fetcher.fetch(self.url)
+        self.html = self.fetcher.html
+        self.doc = self.fetcher.doc
 
-        self.fetch(self.url, headers)
-        self.do_extract(site_conf)
-
-    def fetch(self, url, headers={}, **kwargs):
-        content = self.req_content(url, headers=headers, **kwargs)
-        self.html = self.decode_content(content)
-        self.doc = self.html_to_doc(self.html)
-
-    def do_extract(self, site_conf=SITE_MAP['default']):
+    def do_extract(self, site_conf={}):
         if self.doc is None:
             return
-        default_conf = SITE_MAP['default']
-        title_xpath = site_conf.get('title', default_conf['title'])
-        pics_xpath = site_conf.get('pics', default_conf['pics'])
-        videos_xpath = site_conf.get('videos', default_conf['videos'])
+        parsed_url = urlparse(self.url)
+        hostname = parsed_url.hostname
+        default_conf = SITE_MAP.get(hostname, {})
+        if not default_conf:
+            default_conf = SITE_MAP['default']
 
-        title = self.doc.xpath(title_xpath)
-        self.title = title[0] if title else u''
+        for field in self.FIELDS:
+            _xpath = site_conf.get(field, default_conf.get(field, None))
+            if _xpath:
+                result = self.doc.xpath(_xpath)
+                setattr(self, field, result)
 
-        self.pics = self.doc.xpath(pics_xpath)
-        self.pic = self.pics[0] if self.pics else ''
+    def clear(self):
+        return self.__init__()
 
-        self.videos = self.doc.xpath(videos_xpath)
+    def quit(self):
+        if self.fetcher:
+            self.fetcher.quit()
 
-    @classmethod
-    def req_content(cls, url, headers={}, timeout=10, verify=False, **kwargs):
-        r = requests.get(url,
-                         headers=headers,
-                         timeout=timeout,
-                         verify=verify,
-                         **kwargs)
-        content = r.content if r.status_code == 200 else ''
-        return content
 
-    @classmethod
-    def decode_content(cls, content):
-        encoding = 'utf-8'
-        encoding_info = chardet.detect(content)
-        if encoding_info.get('confidence', 0) > 0.9:
-            encoding = encoding_info.get('encoding', 'utf-8')
-        return content.decode(encoding, errors='replace')
+class XFetcher(object):
 
-    @classmethod
-    def html_to_doc(cls, html):
-        return document_fromstring(html)
+    def __init__(self):
+        self.url = ''
+        self.browser = None
+        self.html = ''
+        self.doc = None
+
+    def fetch(self, url, check_xpath=None):
+        self.url = url
+        if not self.browser:
+            self.browser = webdriver.PhantomJS()
+        self.browser.get(url)
+        timeout = TIME_OUT
+        try:
+            if check_xpath:
+                check_page = EC.presence_of_element_located((By.XPATH, check_xpath))
+            else:
+                def check_page(driver):
+                    return driver.execute_script("return document.readyState") == "complete"
+            WebDriverWait(self.browser, timeout).until(check_page)
+        except TimeoutException:
+            print "Warning: fetch web page timeout!"
+        self.html = self.browser.page_source
+        self.doc = document_fromstring(self.html)
+
+    def clear(self):
+        return self.__init__()
+
+    def quit(self):
+        if self.browser:
+            self.browser.quit()
