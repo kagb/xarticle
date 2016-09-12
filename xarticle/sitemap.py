@@ -2,10 +2,9 @@
 
 SITE_MAP = {
     'default': {
-        'title': '//title[position()=1]/text()',
+        'title': '//title/text()',
         'pics': '//img/@src',
         'videos': '//video/@src',
-    },
-    'm.weibo.cn': {
+        'check_xpath': '',
     },
 }
