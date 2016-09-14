@@ -32,7 +32,6 @@ class XArticle(object):
             self.fetcher = XFetcher()
 
     def extract(self, url):
-        self.__init__()
         self.fetch(url)
         self.do_extract()
 
@@ -52,7 +51,9 @@ class XArticle(object):
             default_conf = SITE_MAP['default']
 
         for field in self.FIELDS:
+            setattr(self, field, None)
             _xpaths = self.site_conf.get(field, default_conf.get(field, []))
+            _xpaths = [_xpaths] if isinstance(_xpaths, str) else _xpaths
             for _xpath in _xpaths:
                 result = []
                 elements = self.doc.xpath(_xpath)
