@@ -52,9 +52,17 @@ class XArticle(object):
             default_conf = SITE_MAP['default']
 
         for field in self.FIELDS:
-            _xpath = self.site_conf.get(field, default_conf.get(field, None))
-            if _xpath:
-                result = self.doc.xpath(_xpath)
+            _xpaths = self.site_conf.get(field, default_conf.get(field, []))
+            for _xpath in _xpaths:
+                result = []
+                elements = self.doc.xpath(_xpath)
+                if not elements:
+                    continue
+                if isinstance(elements, list):
+                    result.extend(elements)
+                else:
+                    result.append(elements)
+                result = list(set(result))
                 setattr(self, field, result)
 
     def clear(self):
@@ -73,12 +81,11 @@ class XFetcher(object):
         self.html = ''
         self.doc = None
 
-    def fetch(self, url, check_xpath=''):
+    def fetch(self, url, check_xpath='', timeout=TIME_OUT):
         self.url = url
         if not self.browser:
             self.browser = webdriver.PhantomJS()
         self.browser.get(url)
-        timeout = TIME_OUT
         try:
             if check_xpath:
                 check_page = EC.presence_of_element_located((By.XPATH, check_xpath))
