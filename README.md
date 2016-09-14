@@ -53,6 +53,6 @@ xarticle 是基于白名单的，在不使用默认配置情况下，你想解�
 - [3] 集成主流网站网页解析配置
 
 
-## LIENCENSE
+## LICENSE
 
 The MIT License (MIT)
