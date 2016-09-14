@@ -1,5 +1,7 @@
 ## XArticle
 
+当前 release 版本 0.1.31。
+
 xarticle 是一个轻量级的网页抓取和解析工具。在完整的爬虫系统中一般包括：抓取页面、解析页面、存储数据几个大的结构模块。xarticle 实现了简洁的抓取、解析的工作。
 xarticle 只有 1kb 大小，非常小巧。
 
@@ -44,14 +46,13 @@ print x.videos
 
 xarticle 是基于白名单的，在不使用默认配置情况下，你想解析一个网站的某些内容，你需要给出这个网站的配置，做过抓取的都知道，抓之前肯定会去看一下自己要抓的页面前端 html 结构是怎样的，这个过程并不麻烦，对某个网站来讲也是一劳永逸，最重要的是：它更加可靠更加准确， 而且小巧。
 
+## TODO
+
+- [1] 支持更多的默认解析配置
+- [2] 支持抓取 url 的预处理
+- [3] 集成主流网站网页解析配置
+
 
 ## LIENCENSE
 
 The MIT License (MIT)
-Copyright (c) 2016 <copyright kagb>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
