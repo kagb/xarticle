@@ -27,7 +27,7 @@ x = XArticle()
 x.extract('http://www.guokr.com/post/708423/') 
 
 # 自己配置某个网站的解析规则，使用xpath语法
-x.site_conf['www.guokr.com'] = {'title': '//h1[@id="articleTitle"]/text()', 'pics': '//div[@class="post-txt"]/img/@src'}
+x.site_conf['www.guokr.com'] = {'title': ['//h1[@id="articleTitle"]/text()'], 'pics': ['//div[@class="post-txt"]/img/@src']}
 x.extract("http://www.guokr.com/post/708423/")
 
 print x.title
