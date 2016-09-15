@@ -12,11 +12,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from sitemap import SITE_MAP
 
 TIME_OUT = 3
+FIELDS = ['title', 'summary', 'pics', 'videos']
 
 
 class XArticle(object):
-
-    FIELDS = ['title', 'summary', 'pics', 'videos']
 
     def __init__(self):
         self.fetcher = None
@@ -41,7 +40,7 @@ class XArticle(object):
         self.html = self.fetcher.html
         self.doc = self.fetcher.doc
 
-    def do_extract(self):
+    def do_extract(self, fields=FIELDS):
         if self.doc is None:
             return
         parsed_url = urlparse(self.url)
@@ -50,7 +49,10 @@ class XArticle(object):
         if not default_conf:
             default_conf = SITE_MAP['default']
 
-        for field in self.FIELDS:
+        if self.site_conf:
+            fields = self.site_conf.keys()
+
+        for field in fields:
             setattr(self, field, None)
             _xpaths = self.site_conf.get(field, default_conf.get(field, []))
             _xpaths = [_xpaths] if isinstance(_xpaths, str) else _xpaths
