@@ -27,6 +27,9 @@ x = XArticle()
 
 # 使用默认配置解析
 x.extract('http://www.guokr.com/post/708423/') 
+print x.title
+print x.pics
+print x.videos
 
 # 自己配置某个网站的解析规则，使用xpath语法
 x.site_conf = {'title': ['//h1[@id="articleTitle"]/text()'], 'pics': ['//div[@class="post-txt"]//img/@src']}
@@ -34,9 +37,18 @@ x.extract("http://www.guokr.com/post/708423/")
 
 print x.title
 print x.pics
-print x.videos
 
 ```
+
+## Pages Fetching
+
+用程序如何获取到完整的网页内容呢？
+对于普通开放的网页，你使用 requests 之类的库工具，可以直接通过 get 方法获取，在个别网页下需要自行设置 User-Agent, 从而获取网页。
+
+然而，如今的网页渲染，很多开始借助异步的 js 来获取数据执行脚本渲染，这种情况下使用 requests 是无法获取到完整的网页的，许多时候只是获取到了基本的 html body 等空标签。
+
+xarticle 使用 selenium + phantomjs 完成模拟浏览器访问, 并加入等待 js load 完成的模块，以尽量确保获取到完整的网页内容。
+
 
 ## Difference with Goose-Extractor
 
@@ -48,9 +60,8 @@ xarticle 是基于白名单的，在不使用默认配置情况下，你想解�
 
 ## TODO
 
-- [1] 支持更多的默认解析配置
-- [2] 支持抓取 url 的预处理
-- [3] 集成主流网站网页解析配置
+- [1] 支持抓取 url 的自动预处理
+- [2] 集成主流网站网页解析配置
 
 
 ## LICENSE
